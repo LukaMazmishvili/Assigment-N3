@@ -28,4 +28,8 @@ class MainViewModel : ViewModel() {
     fun divide(n1: Double, n2: Double) {
         _result.value = (n1 / n2).toString()
     }
+
+    fun percent(n1: Double, n2: Double) {
+        _result.value = ((n1 * n2)/100).toString()
+    }
 }

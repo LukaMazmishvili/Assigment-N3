@@ -65,18 +65,27 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                 viewModel.add(n1, n2)
                 processEnded = true
             }
+
             "-" -> {
                 viewModel.minus(n1, n2)
                 processEnded = true
             }
+
             "÷" -> {
                 viewModel.divide(n1, n2)
                 processEnded = true
             }
+
             "×" -> {
                 viewModel.multiply(n1, n2)
                 processEnded = true
             }
+
+            "%" -> {
+                viewModel.percent(n1, n2)
+                processEnded= true
+            }
+
             "=" -> {
                 processEnded = true
             }
@@ -118,7 +127,12 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         var result = binding.tvResult.text.toString()
         var previousOperator = ""
 
-        fun checkNum1(previousOperation: String = "", operation: String, operator: String, result: String){
+        fun checkNum1(
+            previousOperation: String = "",
+            operation: String,
+            operator: String,
+            result: String
+        ) {
             when (operation) {
                 PLUS.operator -> {
                     if (operation == operator || previousOperation != "") {
@@ -127,6 +141,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                         checkNum1(operation, operation, operator, result)
                     }
                 }
+
                 MINUS.operator -> {
                     if (operation == operator || previousOperation != "") {
                         n1 -= result.toDouble()
@@ -134,6 +149,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                         checkNum1(operation, operation, operator, result)
                     }
                 }
+
                 MULTIPLY.operator -> {
                     if (operation == operator || previousOperation != "") {
                         n1 *= result.toDouble()
@@ -142,6 +158,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                         checkNum1(operation, previousOperation, operator, result)
                     }
                 }
+
                 DIVIDE.operator -> {
                     if (operation == operator || previousOperation != "") {
                         n1 /= result.toDouble()
@@ -149,11 +166,21 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                         checkNum1(operation, operation, operator, result)
                     }
                 }
+
+                PERCENT.operator -> {
+                    if (operation == operator || previousOperation != "") {
+                        n1 = result.toDouble()
+                    }else {
+                        checkNum1(operation, operation, operator, result)
+                    }
+                }
+
                 EQUAL.operator -> {
                     if (previousOperation != operation) {
                         checkNum1(operation, operation, operator, result)
                     }
                 }
+
                 "" -> {
                     n1 = result.toDouble()
                 }
@@ -163,10 +190,11 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         with(binding) {
             when (clickedView) {
                 tvAC -> {
-                    result = ""
+                    result = "0"
                     operation = ""
                     showResult(result, operation)
                 }
+
                 tvDivision -> {
                     if (result.isNotEmpty()) {
                         checkNum1(previousOperator, operation, DIVIDE.operator, result)
@@ -177,6 +205,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     } else {
                     }
                 }
+
                 tvMinus -> {
                     if (result.isNotEmpty()) {
                         checkNum1(previousOperator, operation, MINUS.operator, result)
@@ -187,6 +216,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     } else {
                     }
                 }
+
                 tvPlus -> {
                     if (result.isNotEmpty()) {
                         checkNum1(previousOperator, operation, PLUS.operator, result)
@@ -194,8 +224,10 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                         previousOperator = PLUS.operator
                         n2 = tvResult.text.toString().toDouble()
                         calculate(result = "", operation)
-                    } else { }
+                    } else {
+                    }
                 }
+
                 tvMultiply -> {
                     if (result.isNotEmpty()) {
                         checkNum1(previousOperator, operation, MULTIPLY.operator, result)
@@ -206,7 +238,18 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     } else {
                     }
                 }
-                tvPercent -> {}
+
+                tvPercent -> {
+                    if (result.isNotEmpty()) {
+                        checkNum1(previousOperator, operation, PERCENT.operator, result)
+                        operation = PERCENT.operator
+                        previousOperator = PERCENT.operator
+                        n2 = tvResult.text.toString().toDouble()
+                        calculate(result = "", operation)
+                    } else {
+                    }
+                }
+
                 tvEquals -> {
                     if (result.isNotEmpty()) {
                         n2 = tvResult.text.toString().toDouble()
@@ -217,24 +260,35 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                                 n1 += n2
                                 showResult(result, operation)
                             }
+
                             MINUS.operator -> {
                                 viewModel.minus(n1, n2)
                                 operation = "="
                                 n1 -= n2
                                 showResult(result, operation)
                             }
+
                             MULTIPLY.operator -> {
                                 viewModel.multiply(n1, n2)
                                 operation = "="
                                 n1 *= n2
                                 showResult(result, operation)
                             }
+
                             DIVIDE.operator -> {
                                 viewModel.divide(n1, n2)
                                 operation = "="
                                 n1 /= n2
                                 showResult(result, operation)
                             }
+
+                            PERCENT.operator -> {
+                                viewModel.percent(n1, n2)
+                                operation = "="
+                                n1 = (n1 * n2)/100
+                                showResult(result, operation)
+                            }
+
                             else -> {}
                         }
                         showResult(result, operation)
@@ -242,6 +296,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
 
                     }
                 }
+
                 tvDot -> {
                     if (
                         result.isNotEmpty()
@@ -252,6 +307,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     } else {
                     }
                 }
+
                 tv0 -> {
                     if (result != "0") {
                         result += "0"
@@ -259,8 +315,21 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     } else {
                     }
                 }
+
+                tvPlusMinus -> {
+                    if (result.isNotEmpty() && result != "0") {
+                        operation = ""
+                        result = (result.toDouble() * -1).toString()
+                        showResult(result, operation)
+                    }
+                }
+
                 tv1, tv2, tv3, tv4, tv5, tv6, tv7, tv8, tv9 -> {
                     if (clickedView is TextView) {
+                        if (result == "0") {
+                            result = ""
+                        }
+
                         if (operation == "=") {
                             result = ""
                             operation = ""
@@ -271,6 +340,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
                     } else {
                     }
                 }
+
                 else -> {}
             }
         }
